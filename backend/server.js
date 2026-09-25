@@ -7,6 +7,8 @@ const authRoutes = require('./routes/routes');
 
 const app = express();
 
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
 // Conectar a la base de datos
 connectDB();
 
@@ -17,8 +19,12 @@ app.use(express.json()); // lee lo que envia el front
 // Servir el frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
 
+app.get('/', (req, res) => {
+  res.redirect('/paginas/login.html');
+});
+
 // Definir rutas principales
-app.use('/api/auth', authRoutes);
+app.use('/api', authRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

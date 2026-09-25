@@ -1,7 +1,9 @@
 //Recibe la petición del formulario, valida la existencia del usuario, 
 //genera el hash de la contraseña usando bcryptjs y la almacena.
+//instale jsonwebtoke
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
@@ -39,7 +41,6 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'usuario no encontrado' });
@@ -50,10 +51,18 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'contrasena incorrecta' });
     }
+    
+    //Agrugue esta parte genera un Toke JWT con la iformación clave (ID y Rol)
+    const token = jwt.sign(
+      {id: user._id, role: user.role},
+      process.env.JWT_SECRET || 'secreto',
+      {expiresIn: '24h'}
+    )
 
-    // 3. Responder al frontend si todo coincide
+    // 3. Responder al frontend con el token si todo coincide
     res.status(200).json({
       message: 'Inicio de sesión exitoso.',
+      token,
       user: {
         id: user._id,
         firstName: user.firstName,
