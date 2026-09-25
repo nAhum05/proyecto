@@ -9,7 +9,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const password = document.getElementById('password').value;
 
   try {
-    const response = await fetch('http://localhost:5000/api/auth/register', { //temporal por que esta
+    const response = await fetch('http://localhost:5000/api/register', { //temporal por que esta
         //en local
       method: 'POST',
       headers: {
