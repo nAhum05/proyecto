@@ -18,7 +18,7 @@ exports.updateProfile = async (req, res) => {
         const user = await User.findByIdAndUpdate(
             req.user.id,
             { firstName, lastName, bio },
-            { new: true }
+            { returnDocument: 'after' }
         ).select('-password');
 
         res.json(user);
@@ -71,7 +71,7 @@ exports.updateUserStatus = async (req, res) => {
         const user = await User.findByIdAndUpdate(
             req.params.id,
             { status },
-            { new: true }
+            { returnDocument: 'after' }
         ).select('-password');
 
         if (!user) {
