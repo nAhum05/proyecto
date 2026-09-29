@@ -1,8 +1,9 @@
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const email = document.getElementById('loginEmail').value;
+  const correo = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
+  const mensaje = document.getElementById('mensaje');
 
   try {
     const response = await fetch('http://localhost:5000/api/login', {
@@ -10,7 +11,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ correo, password })
     });
 
     const data = await response.json();
@@ -19,17 +20,16 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       // Guardar Token y el Objeto User completo
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-
-      alert(`¡Bienvenido de nuevo, ${data.user.firstName}!`);
+      mensaje.textContent = `¡Bienvenido, ${data.user.nombre}!`;
+      window.location.href = 'inicio.html';
 
       // Redirigir al feed
-      window.location.href = 'feed.html';
+      window.location.href = 'inicio.html';
     } else {
-      alert(data.message || 'Error al iniciar sesión');
+      mensaje.textContent = data.message || 'Error al iniciar sesión';
     }
 
   } catch (error) {
-    console.error('Error de red:', error);
-    alert('No se pudo conectar con el servidor.');
+    mensaje.textContent = 'No se pudo conectar con el servidor.';
   }
 });

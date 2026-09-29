@@ -7,10 +7,10 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
-    const { firstName, lastName, birthDate, email, password } = req.body;
+    const { nombre, apellido, fechaNacimiento, correo, password } = req.body;
 
     // 1. Verificar si el correo ya existe en la base de datos
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ correo });
     if (existingUser) {
       return res.status(400).json({ message: 'El correo electrónico ya está registrado.' });
     }
@@ -21,16 +21,16 @@ exports.register = async (req, res) => {
 
     // 3. Crear el nuevo usuario con la contraseña ya encriptada
     const newUser = new User({
-      firstName,
-      lastName,
-      birthDate,
-      email,
+      nombre,
+      apellido,
+      fechaNacimiento,
+      correo,
       password: hashedPassword
     });
 
     // 4. Guardar en MongoDB
     await newUser.save();
-    res.status(201).json({ message: 'Usuario registrado.' });
+    res.status(201).json({ message: 'Usuario registrado' });
 
   } catch (error) {
     res.status(500).json({ message: 'Error en el servidor', error: error.message });
@@ -39,9 +39,9 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { correo, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ correo });
     if (!user) {
       return res.status(400).json({ message: 'usuario no encontrado' });
     }
@@ -51,10 +51,14 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'contrasena incorrecta' });
     }
+
+    if  (user.estado !== 'activo'){
+      return res.status(403).json({ message: 'Tu cuenta está suspendida o baneada' });
+    }
     
     //Agrugue esta parte genera un Toke JWT con la iformación clave (ID y Rol)
     const token = jwt.sign(
-      {id: user._id, role: user.role},
+      {id: user._id, rol: user.rol},
       process.env.JWT_SECRET || 'secreto',
       {expiresIn: '24h'}
     )
@@ -65,8 +69,10 @@ exports.login = async (req, res) => {
       token,
       user: {
         id: user._id,
-        firstName: user.firstName,
-        email: user.email
+        nombre: user.nombre,
+        apellido: user.apellido,
+        correo: user.correo,
+        rol: user.rol
       }
     });
 

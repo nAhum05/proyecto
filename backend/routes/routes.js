@@ -1,12 +1,14 @@
 //Las rutas del los endpoints
 const express = require('express');
 const router = express.Router();
-
 const { register, login } = require('../controllers/authControllers');
-const { getProfile, updateProfile, deleteProfile} = require('../controllers/userControllers');
-const { createPost, getPosts } = require('../controllers/postControllers');
+const userController = require('../controllers/userControllers');
+const comunidadController = require('../controllers/comunidadControllers');
+const postController = require('../controllers/postControllers');
+const commentController = require('../controllers/commentControllers');
+const moderationController = require('../controllers/moderationControllers');
 
-const verifyToken = require('../middlewares/authMiddleware');
+const { verifyToken, checkRole } = require('../middlewares/authMiddleware');
 
 // Endpoint POST en /api/auth/register
 router.post('/register', register);
@@ -14,19 +16,30 @@ router.post('/register', register);
 // Endpoint de login /api/auth/login
 router.post('/login', login)
 
-//Obtener perfil de un usuario por su ID
-router.get('/user/:id', verifyToken, getProfile);
+// Usuarios
+router.put('/usuarios/perfil', verifyToken, userController.updateProfile);
+router.delete('/usuarios/perfil', verifyToken, userController.deleteProfile);
+router.get('/usuarios/:id', verifyToken, userController.getProfile);
 
-//Editar perfil propio
-router.put('/user/profile', verifyToken, updateProfile);
+// Comunidades
+router.post('/comunidades', verifyToken, comunidadController.crearComunidad);
+router.get('/comunidades', verifyToken, comunidadController.listarComunidades);
+router.get('/comunidades/:id', verifyToken, comunidadController.obtenerComunidad);
+router.put('/comunidades/:id/miembro', verifyToken, comunidadController.toggleMiembro);
 
-//Eliminar la cuenta propia
-router.delete('/user/profile', verifyToken, deleteProfile)
+//Publicaciones
+router.post('/posts', verifyToken, postController.crearPost);
+router.get('/posts/comunidad/:comunidadId', verifyToken, postController.listarPostsPorComunidad);
+router.get('/posts/:id', verifyToken, postController.obtenerPost);
+router.put('/posts/:id/like', verifyToken, postController.toggleLike);
 
-//Crear una nueva publicacion
-router.post('/posts', verifyToken, createPost);
+//Comentarios
+router.post('/posts/:postId/comentarios', verifyToken, commentController.crearComentario);
+router.get('/posts/:postId/comentarios', verifyToken, commentController.listarComentarios);
 
-//Consultar todas las publicaciones
-router.get('/posts', verifyToken, getPosts);
+//Reportes y moderacion
+router.post('/reportes', verifyToken, moderationController.crearReporte);
+router.get('/moderacion/reportes', verifyToken, checkRole('moderador', 'administrador'), moderationController.obtenerReportesPendientes);
+router.put('/moderacion/publicacion', verifyToken, checkRole('moderador', 'administrador'), moderationController.cambiarEstadoPublicacion);
 
 module.exports = router;

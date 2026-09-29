@@ -2,11 +2,12 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   e.preventDefault(); 
 
   // Capturar los valores de los inputs
-  const firstName = document.getElementById('firstName').value;
-  const lastName = document.getElementById('lastName').value;
-  const birthDate = document.getElementById('birthDate').value;
-  const email = document.getElementById('email').value;
+  const nombre = document.getElementById('firstName').value;
+  const apellido = document.getElementById('lastName').value;
+  const fechaNacimiento = document.getElementById('birthDate').value;
+  const correo = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+  const mensaje = document.getElementById('mensaje');
 
   try {
     const response = await fetch('http://localhost:5000/api/register', { //temporal por que esta
@@ -16,10 +17,10 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        firstName,
-        lastName,
-        birthDate,
-        email,
+        nombre,
+        apellido,
+        fechaNacimiento,
+        correo,
         password
       })
     });
@@ -27,14 +28,13 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const data = await response.json();
 
     if (response.ok) {
-      alert('¡Registro exitoso! Redirigiendo al login...');
-      window.location.href = 'login.html'; // Redirige a login
+      mensaje.textContent = '¡Registro exitoso! Redirigiendo al login...';
+      window.location.href = 'login.html';
     } else {
-      alert(data.message || 'Error al registrar usuario');
+      mensaje.textContent = data.message || 'Error al registrar usuario';
     }
 
   } catch (error) {
-    console.error('Error de red:', error);
-    alert('No se pudo conectar con el servidor.');
+    mensaje.textContent = 'No se pudo conectar con el servidor.';
   }
 });

@@ -3,16 +3,22 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  firstName: { type: String, required: true, trim: true },
-  lastName:  { type: String, required: true, trim: true },
-  birthDate: { type: Date, required: true },
-  email:     { type: String, required: true, unique: true, lowercase: true },
+  nombre: { type: String, required: true, trim: true },
+  apellido:  { type: String, required: true, trim: true },
+  fechaNacimiento: { type: Date, required: true },
+  correo:     { type: String, required: true, unique: true, lowercase: true },
   password:  { type: String, required: true },
-  bio: {type: String, default: ''},
-  role:{
+  biografia:       { type: String, default: '' },
+  avatar:    { type: String, default: '' },
+  rol: {
     type: String,
     enum: ['usuario', 'moderador', 'administrador'],
     default: 'usuario'
+  },
+  estado: {
+    type: String,
+    enum: ['activo', 'suspendido', 'baneado'],
+    default: 'activo'
   }
 }, { timestamps: true }); // Agrega automáticamente la fecha de creación y actualización
 

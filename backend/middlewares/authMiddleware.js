@@ -1,3 +1,4 @@
+// Verifica que el usuario este autenticado y tenga permisos
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
@@ -17,4 +18,13 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-module.exports = verifyToken;
+const checkRole = (...allowedRoles) => {
+    return (req, res, next) => {
+        if (!req.user || !allowedRoles.includes(req.user.rol)) {
+            return res.status(403).json({ message: 'Acceso denegado: No tienes permisos' });
+        }
+        next();
+    };
+};
+
+module.exports = {verifyToken, checkRole};
