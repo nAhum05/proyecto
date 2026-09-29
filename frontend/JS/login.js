@@ -16,14 +16,18 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = await response.json();
 
     if (response.ok) {
-      // Guardar Token y el Objeto User completo
+
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
       alert(`¡Bienvenido de nuevo, ${data.user.firstName}!`);
 
-      // Redirigir al feed
-      window.location.href = 'feed.html';
+      if (data.user.role === 'moderador') {
+        window.location.href = 'moderador.html';
+      } else {
+        window.location.href = 'feed.html';
+      }
+
     } else {
       alert(data.message || 'Error al iniciar sesión');
     }

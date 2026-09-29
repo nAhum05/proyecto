@@ -45,6 +45,11 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: 'usuario no encontrado' });
     }
+    if (user.status === 'suspendido') {
+      return res.status(403).json({ 
+        message: 'Tu cuenta está suspendida. No puedes iniciar sesión.' 
+      });
+    }
 
     // 2. Comparar el hash de mongo
     const isMatch = await bcrypt.compare(password, user.password);
@@ -66,7 +71,9 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         firstName: user.firstName,
-        email: user.email
+        email: user.email,
+        role: user.role,
+        status: user.status
       }
     });
 

@@ -1,10 +1,15 @@
 //Las rutas del los endpoints
 const express = require('express');
 const router = express.Router();
-
+const moderatorMiddleware = require('../middlewares/moderatorMiddleware');
 const { register, login } = require('../controllers/authControllers');
-const { getProfile, updateProfile, deleteProfile} = require('../controllers/userControllers');
-const { createPost, getPosts } = require('../controllers/postControllers');
+const { 
+    getProfile, 
+    updateProfile, 
+    deleteProfile,
+    getUsers,
+    updateUserStatus
+} = require('../controllers/userControllers');const { createPost, getPosts } = require('../controllers/postControllers');
 
 const verifyToken = require('../middlewares/authMiddleware');
 
@@ -28,5 +33,21 @@ router.post('/posts', verifyToken, createPost);
 
 //Consultar todas las publicaciones
 router.get('/posts', verifyToken, getPosts);
+
+// Consultar todos los usuarios - solo moderadores
+router.get(
+    '/moderator/users',
+    verifyToken,
+    moderatorMiddleware,
+    getUsers
+);
+
+// Cambiar estado de un usuario - solo moderadores
+router.put(
+    '/moderator/users/:id/status',
+    verifyToken,
+    moderatorMiddleware,
+    updateUserStatus
+);
 
 module.exports = router;
