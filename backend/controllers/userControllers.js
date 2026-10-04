@@ -1,63 +1,95 @@
 const User = require('../models/user');
-const bcrypt = require('bcryptjs');
 
-// 1 Obtener perfil de un usuario por su ID
+// Consultar perfil por ID
 exports.getProfile = async (req, res) => {
     try {
         const user = await User.findById(req.params.id).select('-password');
-
-        if (!user) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
-        }
-
-        res.status(200).json(user);
+        if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+        res.json(user);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener el perfil', error: error.message });
+        res.status(500).json({ message: 'Error al consultar perfil' });
     }
 };
 
-// 2 Editar el perfil propio
+// Editar perfil del usuario autenticado
 exports.updateProfile = async (req, res) => {
     try {
-        const { nombre, apellido, biografia, avatar, password } = req.body;
-        const userId = req.user.id;
-
-        const camposActualizar = {};
-        if (nombre) camposActualizar.nombre = nombre;
-        if (apellido) camposActualizar.apellido = apellido;
-        if (biografia !== undefined) camposActualizar.biografia = biografia;
-        if (avatar !== undefined) camposActualizar.avatar = avatar;
-
-        // Si envían nueva contraseña, la encriptamos
-        if (password) {
-            const salt = await bcrypt.genSalt(10);
-            camposActualizar.password = await bcrypt.hash(password, salt);
-        }
-
-        const usuarioActualizado = await User.findByIdAndUpdate(
-            userId,
-            { $set: camposActualizar },
-            { new: true, runValidators: true }
+        const { firstName, lastName, bio } = req.body;
+        const user = await User.findByIdAndUpdate(
+            req.user.id,
+            { firstName, lastName, bio },
+            { returnDocument: 'after' }
         ).select('-password');
 
-        res.status(200).json({
-            message: 'Perfil actualizado exitosamente',
-            user: usuarioActualizado
-        });
+        res.json(user);
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar el perfil', error: error.message });
+        res.status(500).json({ message: 'Error al actualizar perfil' });
     }
 };
 
-// 3 Eliminar la cuenta propia
+// Eliminar perfil
 exports.deleteProfile = async (req, res) => {
     try {
-        const userId = req.user.id;
-
-        await User.findByIdAndDelete(userId);
-
-        res.status(200).json({ message: 'Cuenta eliminada exitosamente' });
+        await User.findByIdAndDelete(req.user.id);
+        res.json({ message: 'Cuenta eliminada con éxito' });
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar la cuenta', error: error.message });
+        res.status(500).json({ message: 'Error al eliminar cuenta' });
+    }
+};
+
+// Consultar todos los usuarios
+exports.getUsers = async (req, res) => {
+    try {
+
+        const users = await User.find()
+            .select('-password')
+            .sort({ createdAt: -1 });
+
+        res.json(users);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: 'Error al consultar usuarios'
+        });
+
+    }
+};
+
+// Cambiar el estado de un usuario
+exports.updateUserStatus = async (req, res) => {
+    try {
+
+        const { status } = req.body;
+
+        if (!['activo', 'suspendido'].includes(status)) {
+            return res.status(400).json({
+                message: 'Estado no válido'
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { returnDocument: 'after' }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'Usuario no encontrado'
+            });
+        }
+
+        res.json({
+            message: 'Estado actualizado correctamente',
+            user
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: 'Error al actualizar el estado del usuario'
+        });
+
     }
 };

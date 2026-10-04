@@ -1,27 +1,53 @@
-//Define la plantilla o estructura fija (schema) de los documentos que se guardarán en MongoDB
-
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  nombre: { type: String, required: true, trim: true },
-  apellido:  { type: String, required: true, trim: true },
-  fechaNacimiento: { type: Date, required: true },
-  correo:     { type: String, required: true, unique: true, lowercase: true },
-  password:  { type: String, required: true },
-  biografia:       { type: String, default: '' },
-  avatar:    { type: String, default: '' },
-  rol: {
+
+  firstName: { 
+    type: String, 
+    required: true, 
+    trim: true 
+  },
+
+  lastName: { 
+    type: String, 
+    required: true, 
+    trim: true 
+  },
+
+  birthDate: { 
+    type: Date, 
+    required: true 
+  },
+
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true, 
+    lowercase: true 
+  },
+
+  password: { 
+    type: String, 
+    required: true 
+  },
+
+  bio: {
+    type: String,
+    default: ''
+  },
+
+  role: {
     type: String,
     enum: ['usuario', 'moderador', 'administrador'],
     default: 'usuario'
   },
-  estado: {
+
+  status: {
     type: String,
     enum: ['activo', 'suspendido', 'baneado'],
     default: 'activo'
   }
-}, { timestamps: true }); // Agrega automáticamente la fecha de creación y actualización
+
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
-
-

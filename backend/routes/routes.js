@@ -1,45 +1,99 @@
-//Las rutas del los endpoints
+// routes.js — Rutas de la API
 const express = require('express');
 const router = express.Router();
+const verifyToken         = require('../middlewares/authMiddleware');
+const moderatorMiddleware = require('../middlewares/moderatorMiddleware');
+const adminMiddleware     = require('../middlewares/adminMiddleware');
+
 const { register, login } = require('../controllers/authControllers');
-const userController = require('../controllers/userControllers');
-const comunidadController = require('../controllers/comunidadControllers');
-const postController = require('../controllers/postControllers');
-const commentController = require('../controllers/commentControllers');
-const moderationController = require('../controllers/moderationControllers');
 
-const { verifyToken, checkRole } = require('../middlewares/authMiddleware');
+const {
+    getProfile,
+    updateProfile,
+    deleteProfile,
+    getUsers,
+    updateUserStatus
+} = require('../controllers/userControllers');
 
-// Endpoint POST en /api/auth/register
+const {
+    createPost,
+    getPosts
+} = require('../controllers/postControllers');
+
+const {
+    updateUserRole,
+    banOrSuspendUser,
+    deleteAnyPost,
+    deleteUser,
+    getStats
+} = require('../controllers/adminControllers');
+
+
 router.post('/register', register);
+router.post('/login', login);
 
-// Endpoint de login /api/auth/login
-router.post('/login', login)
+
+
+// Perfil propio (específicas PRIMERO)
+router.put('/user/profile', verifyToken, updateProfile);
+router.delete('/user/profile', verifyToken, deleteProfile);
+
+// Perfil por ID (parametrizada DESPUÉS)
+router.get('/user/:id', verifyToken, getProfile);
+
+// Publicaciones
+router.post('/posts', verifyToken, createPost);
+router.get('/posts', verifyToken, getPosts);
+
+
+router.get(
+    '/moderator/users',
+    verifyToken,
+    moderatorMiddleware,
+    getUsers
+);
+
+router.put(
+    '/moderator/users/:id/status',
+    verifyToken,
+    moderatorMiddleware,
+    updateUserStatus   // solo activo/suspendido
+);
+
+
+// Dashboard
+router.get('/admin/stats', verifyToken, adminMiddleware, getStats);
 
 // Usuarios
-router.put('/usuarios/perfil', verifyToken, userController.updateProfile);
-router.delete('/usuarios/perfil', verifyToken, userController.deleteProfile);
-router.get('/usuarios/:id', verifyToken, userController.getProfile);
+router.get('/admin/users', verifyToken, adminMiddleware, getUsers);
 
-// Comunidades
-router.post('/comunidades', verifyToken, comunidadController.crearComunidad);
-router.get('/comunidades', verifyToken, comunidadController.listarComunidades);
-router.get('/comunidades/:id', verifyToken, comunidadController.obtenerComunidad);
-router.put('/comunidades/:id/miembro', verifyToken, comunidadController.toggleMiembro);
+router.put(
+    '/admin/users/:id/role',
+    verifyToken,
+    adminMiddleware,
+    updateUserRole
+);
 
-//Publicaciones
-router.post('/posts', verifyToken, postController.crearPost);
-router.get('/posts/comunidad/:comunidadId', verifyToken, postController.listarPostsPorComunidad);
-router.get('/posts/:id', verifyToken, postController.obtenerPost);
-router.put('/posts/:id/like', verifyToken, postController.toggleLike);
+router.put(
+    '/admin/users/:id/status',
+    verifyToken,
+    adminMiddleware,
+    banOrSuspendUser   // activo/suspendido/baneado
+);
 
-//Comentarios
-router.post('/posts/:postId/comentarios', verifyToken, commentController.crearComentario);
-router.get('/posts/:postId/comentarios', verifyToken, commentController.listarComentarios);
+router.delete(
+    '/admin/users/:id',
+    verifyToken,
+    adminMiddleware,
+    deleteUser
+);
 
-//Reportes y moderacion
-router.post('/reportes', verifyToken, moderationController.crearReporte);
-router.get('/moderacion/reportes', verifyToken, checkRole('moderador', 'administrador'), moderationController.obtenerReportesPendientes);
-router.put('/moderacion/publicacion', verifyToken, checkRole('moderador', 'administrador'), moderationController.cambiarEstadoPublicacion);
+// Publicaciones
+router.delete(
+    '/admin/posts/:id',
+    verifyToken,
+    adminMiddleware,
+    deleteAnyPost
+);
 
 module.exports = router;

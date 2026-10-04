@@ -1,16 +1,15 @@
+require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db');
 const authRoutes = require('./routes/routes');
+const connectDB = require('./config/db');
 
 const app = express();
 
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-// Conectar a la base de datos
-connectDB();
-
+connectDB(),
 // Middlewares
 app.use(cors());
 app.use(express.json()); // lee lo que envia el front
