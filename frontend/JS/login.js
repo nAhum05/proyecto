@@ -4,11 +4,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
 
-  if (password.length < 8) {
-    alert('La contraseña debe tener mínimo 8 caracteres.');
-    return;
-  }
-
   try {
     const response = await fetch('http://localhost:5000/api/login', {
       method: 'POST',
