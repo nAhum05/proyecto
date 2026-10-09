@@ -51,6 +51,12 @@ exports.login = async (req, res) => {
       });
     }
 
+    if (user.status === 'baneado') {
+      return res.status(403).json({
+        message: 'Tu cuenta ha sido baneada permanentemente.'
+      });
+    }
+
     // 2. Comparar el hash de mongo
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {

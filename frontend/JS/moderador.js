@@ -8,8 +8,8 @@ if (!token || !user) {
 }
 
 
-// Verificar que sea moderador
-if (user.role !== 'moderador') {
+// Verificar que sea moderador o administrador
+if (!['moderador', 'administrador'].includes(user.role)) {
     window.location.href = 'feed.html';
 }
 
