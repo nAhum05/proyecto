@@ -1,53 +1,55 @@
-//Las rutas del los endpoints
 const express = require('express');
 const router = express.Router();
+const verifyToken         = require('../middlewares/authMiddleware');
 const moderatorMiddleware = require('../middlewares/moderatorMiddleware');
+const adminMiddleware     = require('../middlewares/adminMiddleware');
+
 const { register, login } = require('../controllers/authControllers');
-const { 
-    getProfile, 
-    updateProfile, 
+
+const {
+    getProfile,
+    updateProfile,
     deleteProfile,
     getUsers,
     updateUserStatus
-} = require('../controllers/userControllers');const { createPost, getPosts } = require('../controllers/postControllers');
+} = require('../controllers/userControllers');
 
-const verifyToken = require('../middlewares/authMiddleware');
+const { createPost, getPosts } = require('../controllers/postControllers');
 
-// Endpoint POST en /api/auth/register
+const {
+    updateUserRole,
+    banOrSuspendUser,
+    deleteAnyPost,
+    deleteUser,
+    getStats
+} = require('../controllers/adminControllers');
+
 router.post('/register', register);
+router.post('/login', login);
 
-// Endpoint de login /api/auth/login
-router.post('/login', login)
-
-//Obtener perfil de un usuario por su ID
+// Perfil propio (específicas PRIMERO para evitar colisión con /:id)
+router.put('/user/profile', verifyToken, updateProfile);
+router.delete('/user/profile', verifyToken, deleteProfile);
 router.get('/user/:id', verifyToken, getProfile);
 
-//Editar perfil propio
-router.put('/user/profile', verifyToken, updateProfile);
-
-//Eliminar la cuenta propia
-router.delete('/user/profile', verifyToken, deleteProfile)
-
-//Crear una nueva publicacion
+// Publicaciones
 router.post('/posts', verifyToken, createPost);
-
-//Consultar todas las publicaciones
 router.get('/posts', verifyToken, getPosts);
 
-// Consultar todos los usuarios - solo moderadores
-router.get(
-    '/moderator/users',
-    verifyToken,
-    moderatorMiddleware,
-    getUsers
-);
+// Moderador
+router.get('/moderator/users', verifyToken, moderatorMiddleware, getUsers);
+router.put('/moderator/users/:id/status', verifyToken, moderatorMiddleware, updateUserStatus);
 
-// Cambiar estado de un usuario - solo moderadores
-router.put(
-    '/moderator/users/:id/status',
-    verifyToken,
-    moderatorMiddleware,
-    updateUserStatus
-);
+// Admin — estadísticas
+router.get('/admin/stats', verifyToken, adminMiddleware, getStats);
+
+// Admin — usuarios
+router.get('/admin/users', verifyToken, adminMiddleware, getUsers);
+router.put('/admin/users/:id/role', verifyToken, adminMiddleware, updateUserRole);
+router.put('/admin/users/:id/status', verifyToken, adminMiddleware, banOrSuspendUser);
+router.delete('/admin/users/:id', verifyToken, adminMiddleware, deleteUser);
+
+// Admin — publicaciones
+router.delete('/admin/posts/:id', verifyToken, adminMiddleware, deleteAnyPost);
 
 module.exports = router;

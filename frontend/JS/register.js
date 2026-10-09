@@ -8,6 +8,11 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
 
+  if (password.length !== 8) {
+    alert('La contraseña debe tener exactamente 8 caracteres.');
+    return; 
+  }
+
   try {
     const response = await fetch('http://localhost:5000/api/register', { //temporal por que esta
         //en local
