@@ -10,10 +10,12 @@
   <!-- FontAwesome Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
 
   <style>
-    /* Sin animaciones ni transiciones en toda la página */
-    *, *::before, *::after {
+    /* La página en sí no tiene animaciones; solo las notificaciones de SweetAlert */
+    .app-header *, main *, .btn {
       transition: none !important;
       animation: none !important;
     }
@@ -199,6 +201,68 @@
       border-color: #ef4444;
       color: #ffffff;
     }
+
+    /* ---------- SweetAlert2 con la paleta NIX ---------- */
+    .swal2-popup.swal-nix {
+      background: #07090e;
+      color: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 30px 70px -20px rgba(200, 150, 26, 0.35);
+      font-family: 'Inter', sans-serif;
+    }
+    .swal-nix .swal2-title {
+      font-family: 'Space Grotesk', sans-serif;
+      color: #fff;
+      font-size: 1.4rem;
+    }
+    .swal2-popup.swal2-toast.swal-nix .swal2-title { font-size: 0.95rem; }
+    .swal-nix .swal2-html-container { color: var(--muted); }
+
+    .swal-nix-confirm {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: #1a1200;
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.4rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin: 0 0.3rem;
+    }
+    .swal-nix-confirm:hover { filter: brightness(1.08); }
+
+    .swal-nix-danger {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.4rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin: 0 0.3rem;
+    }
+    .swal-nix-danger:hover { filter: brightness(1.1); }
+
+    .swal-nix-cancel {
+      background: transparent;
+      color: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.6rem 1.4rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin: 0 0.3rem;
+    }
+    .swal-nix-cancel:hover { background: rgba(255, 255, 255, 0.05); }
+
+    /* Iconos en dorado */
+    .swal-nix .swal2-icon.swal2-success { border-color: var(--gold-light); color: var(--gold-light); }
+    .swal-nix .swal2-icon.swal2-success [class^='swal2-success-line'] { background-color: var(--gold-light); }
+    .swal-nix .swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(253, 213, 126, 0.3); }
+    .swal-nix .swal2-icon.swal2-success [class^='swal2-success-circular-line'] { background: transparent; }
+    .swal-nix .swal2-icon.swal2-warning,
+    .swal-nix .swal2-icon.swal2-question { border-color: var(--gold-light); color: var(--gold-light); }
+    .swal-nix .swal2-timer-progress-bar { background: var(--gold-light); }
   </style>
 </head>
 <body>

@@ -1,3 +1,27 @@
+// Ventana central con la paleta NIX (SweetAlert2)
+const Modal = Swal.mixin({
+  buttonsStyling: false,
+  customClass: {
+    popup: 'swal-nix',
+    confirmButton: 'swal-nix-confirm',
+    cancelButton: 'swal-nix-cancel'
+  }
+});
+
+// Aviso pequeño que aparece arriba a la derecha y se va solo
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2500,
+  timerProgressBar: true,
+  customClass: { popup: 'swal-nix' },
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer);
+    toast.addEventListener('mouseleave', Swal.resumeTimer);
+  }
+});
+
 // 1. Validar sesión
 const token = localStorage.getItem('token');
 if (!token) {
@@ -6,6 +30,13 @@ if (!token) {
 
 // 2. Cargar publicaciones al entrar
 window.addEventListener('DOMContentLoaded', async () => {
+
+  // Si venimos de publicar, mostrar el aviso
+  if (sessionStorage.getItem('postPublished')) {
+    sessionStorage.removeItem('postPublished');
+    Toast.fire({ icon: 'success', title: 'Publicación realizada' });
+  }
+
   try {
     const response = await fetch('http://localhost:5000/api/posts', {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -72,6 +103,7 @@ document.getElementById('btnPublish').addEventListener('click', async (e) => {
 
     if (response.ok) {
       document.getElementById('postContent').value = '';
+      sessionStorage.setItem('postPublished', '1'); // para mostrar el aviso tras recargar
       window.location.reload(); // Recargar la página para ver la nueva publicación
     } else {
       alert(data.message || 'Error al publicar');
@@ -82,9 +114,21 @@ document.getElementById('btnPublish').addEventListener('click', async (e) => {
   }
 });
 
-// 4. Cerrar sesión
-document.getElementById('btnLogout').addEventListener('click', (e) => {
+// 4. Cerrar sesión (con confirmación)
+document.getElementById('btnLogout').addEventListener('click', async (e) => {
   e.preventDefault();
+
+  const confirmacion = await Modal.fire({
+    icon: 'question',
+    title: '¿Cerrar sesión?',
+    showCancelButton: true,
+    confirmButtonText: 'Salir',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  });
+
+  if (!confirmacion.isConfirmed) return;
+
   localStorage.clear();
   window.location.href = 'login.html';
 });
