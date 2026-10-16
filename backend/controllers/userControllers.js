@@ -38,11 +38,13 @@ exports.deleteProfile = async (req, res) => {
 };
 
 // Consultar todos los usuarios
+
+// Consultar todos los usuarios
 exports.getUsers = async (req, res) => {
     try {
 
         const users = await User.find()
-            .select('-password')
+            .select('_id firstName lastName email role status')
             .sort({ createdAt: -1 });
 
         res.json(users);
@@ -55,6 +57,7 @@ exports.getUsers = async (req, res) => {
 
     }
 };
+
 
 // Cambiar el estado de un usuario
 exports.updateUserStatus = async (req, res) => {
