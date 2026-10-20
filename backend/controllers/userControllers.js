@@ -42,38 +42,42 @@ exports.deleteProfile = async (req, res) => {
 // Consultar todos los usuarios
 exports.getUsers = async (req, res) => {
     try {
-
         const users = await User.find()
-            .select('_id firstName lastName email role status')
+            .select('-password') // Excluimos únicamente la contraseña, permitiendo que viajen los timestamps y demás datos
             .sort({ createdAt: -1 });
 
         res.json(users);
 
     } catch (error) {
-
         res.status(500).json({
             message: 'Error al consultar usuarios'
         });
-
     }
 };
 
-
-// Cambiar el estado de un usuario
+// En tu userControllers.js (Función updateUserStatus)
 exports.updateUserStatus = async (req, res) => {
     try {
-
         const { status } = req.body;
 
-        if (!['activo', 'suspendido'].includes(status)) {
+        // El moderador SOLO puede cambiar entre 'activo' y 'baneado'
+        if (!['activo', 'baneado'].includes(status)) {
             return res.status(400).json({
-                message: 'Estado no válido'
+                message: 'Los moderadores solo pueden activar o banear usuarios.'
             });
+        }
+
+        const updateData = { status };
+
+        if (status === 'baneado') {
+            updateData.fechaBaneo = new Date(); // Registra el timestamp del baneo
+        } else {
+            updateData.fechaBaneo = null; // Limpia la fecha si se activa
         }
 
         const user = await User.findByIdAndUpdate(
             req.params.id,
-            { status },
+            updateData,
             { returnDocument: 'after' }
         ).select('-password');
 
@@ -89,10 +93,9 @@ exports.updateUserStatus = async (req, res) => {
         });
 
     } catch (error) {
-
         res.status(500).json({
-            message: 'Error al actualizar el estado del usuario'
+            message: 'Error al actualizar el estado del usuario',
+            error: error.message
         });
-
     }
 };

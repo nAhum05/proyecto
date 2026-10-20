@@ -46,8 +46,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['activo', 'suspendido', 'baneado'],
     default: 'activo'
+  },
+
+  ultimoInicioSesion: {
+    type: Date,
+    default: null
+  },
+
+  fechaBaneo: {
+    type: Date,
+    default: null
   }
 
 }, { timestamps: true });
+
 
 module.exports = mongoose.model('User', userSchema);

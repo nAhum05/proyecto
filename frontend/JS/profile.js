@@ -1,3 +1,39 @@
+// ---------- Notificaciones (SweetAlert2 con la paleta NIX) ----------
+
+// Aviso pequeño que aparece arriba a la derecha y se va solo
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 2500,
+    timerProgressBar: true,
+    customClass: { popup: 'swal-nix' },
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+});
+
+// Ventana central para errores y confirmaciones
+const Modal = Swal.mixin({
+    buttonsStyling: false,
+    customClass: {
+        popup: 'swal-nix',
+        confirmButton: 'swal-nix-confirm',
+        cancelButton: 'swal-nix-cancel'
+    }
+});
+
+function errorServidor() {
+    return Modal.fire({
+        icon: 'error',
+        title: 'Sin conexión',
+        text: 'No se pudo conectar con el servidor.',
+        confirmButtonText: 'Entendido'
+    });
+}
+
+
 // 1. Validar sesión
 const token = localStorage.getItem('token');
 const userStored = JSON.parse(localStorage.getItem('user'));
@@ -5,6 +41,7 @@ const userStored = JSON.parse(localStorage.getItem('user'));
 if (!token || !userStored) {
     window.location.href = 'login.html';
 }
+
 
 // 2. Cargar datos del perfil al entrar
 window.addEventListener('DOMContentLoaded', async () => {
@@ -29,13 +66,19 @@ window.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('editFirstName').value = data.firstName;
             document.getElementById('editLastName').value = data.lastName || '';
         } else {
-            alert(data.message || 'Error al obtener el perfil');
+            Modal.fire({
+                icon: 'error',
+                title: 'No se pudo cargar',
+                text: data.message || 'Error al obtener el perfil',
+                confirmButtonText: 'Entendido'
+            });
         }
     } catch (error) {
         console.error('Error de red:', error);
-        alert('No se pudo conectar con el servidor.');
+        errorServidor();
     }
 });
+
 
 // 3. Guardar cambios del perfil
 document.getElementById('formUpdateProfile').addEventListener('submit', async (e) => {
@@ -57,26 +100,53 @@ document.getElementById('formUpdateProfile').addEventListener('submit', async (e
         const data = await response.json();
 
         if (response.ok) {
-            alert('Perfil actualizado correctamente');
-
             // Actualizar los datos guardados en LocalStorage
             userStored.firstName = firstName;
             userStored.lastName = lastName;
             localStorage.setItem('user', JSON.stringify(userStored));
 
-            window.location.reload(); // Recargar la página para reflejar los cambios
+            // Reflejar los cambios en pantalla sin recargar (así el aviso no se corta)
+            document.getElementById('lblFirstName').textContent = firstName;
+            document.getElementById('lblLastName').textContent = lastName;
+
+            Toast.fire({
+                icon: 'success',
+                title: data.message || 'Perfil actualizado correctamente'
+            });
         } else {
-            alert(data.message || 'Error al actualizar');
+            Modal.fire({
+                icon: 'error',
+                title: 'No se pudo actualizar',
+                text: data.message || 'Inténtalo de nuevo.',
+                confirmButtonText: 'Entendido'
+            });
         }
     } catch (error) {
         console.error('Error de red:', error);
-        alert('No se pudo conectar con el servidor.');
+        errorServidor();
     }
 });
 
+
 // 4. Eliminar cuenta
 document.getElementById('btnDeleteAccount').addEventListener('click', async () => {
-    if (!confirm('¿Seguro que deseas eliminar tu cuenta?')) return;
+    const confirmacion = await Modal.fire({
+        icon: 'warning',
+        title: '¿Eliminar tu cuenta?',
+        text: 'Esta acción no se puede deshacer.',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        focusCancel: true,
+        customClass: {
+            popup: 'swal-nix',
+            confirmButton: 'swal-nix-danger',
+            cancelButton: 'swal-nix-cancel'
+        }
+    });
+
+    if (!confirmacion.isConfirmed) return;
 
     try {
         const response = await fetch('http://localhost:5000/api/user/profile', {
@@ -87,21 +157,46 @@ document.getElementById('btnDeleteAccount').addEventListener('click', async () =
         const data = await response.json();
 
         if (response.ok) {
-            alert('Cuenta eliminada');
             localStorage.clear();
+
+            // Esperar a que el aviso termine y después salir
+            await Toast.fire({
+                icon: 'success',
+                title: 'Cuenta eliminada',
+                timer: 1800
+            });
+
             window.location.href = 'login.html';
         } else {
-            alert(data.message || 'Error al eliminar cuenta');
+            Modal.fire({
+                icon: 'error',
+                title: 'No se pudo eliminar',
+                text: data.message || 'Inténtalo de nuevo.',
+                confirmButtonText: 'Entendido'
+            });
         }
     } catch (error) {
         console.error('Error de red:', error);
-        alert('No se pudo conectar con el servidor.');
+        errorServidor();
     }
 });
 
+
 // 5. Cerrar sesión
-document.getElementById('btnLogout').addEventListener('click', (e) => {
+document.getElementById('btnLogout').addEventListener('click', async (e) => {
     e.preventDefault();
+
+    const confirmacion = await Modal.fire({
+        icon: 'question',
+        title: '¿Cerrar sesión?',
+        showCancelButton: true,
+        confirmButtonText: 'Salir',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
     localStorage.clear();
     window.location.href = 'login.html';
 });

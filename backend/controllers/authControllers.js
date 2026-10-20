@@ -51,19 +51,23 @@ exports.login = async (req, res) => {
       });
     }
 
-    if (user.status === 'baneado') {
-      return res.status(403).json({
-        message: 'Tu cuenta ha sido baneada permanentemente.'
-      });
-    }
+    // if (user.status === 'baneado') {
+    //   return res.status(403).json({
+    //     message: 'Tu cuenta ha sido baneada permanentemente.'
+    //   });
+    // }
 
     // 2. Comparar el hash de mongo
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'contrasena incorrecta' });
     }
+
+    //Registrar el timestamp del ultimo inicio de sesión
+    user.ultimoInicioSesion = new Date();
+    await user.save();
     
-    //Agrugue esta parte genera un Toke JWT con la iformación clave (ID y Rol)
+    //Agregue esta parte genera un Toke JWT con la iformación clave (ID y Rol)
     const token = jwt.sign(
       {id: user._id, role: user.role},
       process.env.JWT_SECRET || 'secreto',
@@ -79,7 +83,8 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         email: user.email,
         role: user.role,
-        status: user.status
+        status: user.status,
+        ultimoInicioSesion: user.ultimoInicioSesion
       }
     });
 
