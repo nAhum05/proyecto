@@ -63,18 +63,16 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'contrasena incorrecta' });
     }
 
-    //Registrar el timestamp del ultimo inicio de sesión
-    user.ultimoInicioSesion = new Date();
+    // Registrar el evento de inicio de sesión en el historial
+    user.historialSesiones.push({ fecha: new Date() });
     await user.save();
-    
-    //Agregue esta parte genera un Toke JWT con la iformación clave (ID y Rol)
+
     const token = jwt.sign(
       {id: user._id, role: user.role},
       process.env.JWT_SECRET || 'secreto',
       {expiresIn: '24h'}
     )
 
-    // 3. Responder al frontend con el token si todo coincide
     res.status(200).json({
       message: 'Inicio de sesión exitoso.',
       token,
@@ -83,8 +81,7 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         email: user.email,
         role: user.role,
-        status: user.status,
-        ultimoInicioSesion: user.ultimoInicioSesion
+        status: user.status
       }
     });
 

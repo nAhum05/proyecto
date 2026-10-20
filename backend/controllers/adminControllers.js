@@ -60,17 +60,12 @@ exports.banOrSuspendUser = async (req, res) => {
             });
         }
 
-        const updateData = { status };
-
-        if (status === 'baneado') {
-            updateData.fechaBaneo = new Date(); // Guarda la fecha y hora exacta del baneo
-        } else {
-            updateData.fechaBaneo = null; // Si se desbanea, limpiamos la fecha opcionalmente
-        }
-
         const user = await User.findByIdAndUpdate(
             req.params.id,
-            updateData,
+            {
+                status,
+                $push: { historialEstados: { estado: status, fecha: new Date() } }
+            },
             { returnDocument: 'after' }
         ).select('-password');
 

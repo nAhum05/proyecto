@@ -38,8 +38,6 @@ exports.deleteProfile = async (req, res) => {
 };
 
 // Consultar todos los usuarios
-
-// Consultar todos los usuarios
 exports.getUsers = async (req, res) => {
     try {
         const users = await User.find()
@@ -67,17 +65,12 @@ exports.updateUserStatus = async (req, res) => {
             });
         }
 
-        const updateData = { status };
-
-        if (status === 'baneado') {
-            updateData.fechaBaneo = new Date(); // Registra el timestamp del baneo
-        } else {
-            updateData.fechaBaneo = null; // Limpia la fecha si se activa
-        }
-
         const user = await User.findByIdAndUpdate(
             req.params.id,
-            updateData,
+            {
+                status,
+                $push: { historialEstados: { estado: status, fecha: new Date() } }
+            },
             { returnDocument: 'after' }
         ).select('-password');
 
