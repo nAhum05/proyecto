@@ -3,28 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar Sesión - Red Social</title>
+  <title>Iniciar Sesión - NIX</title>
+  <link rel="icon" type="image/png" href="../images/LunaLogo.png">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
 
     :root {
-      --bg: #0b0713;
-      --panel: #120b22;
-      --line: rgba(196, 181, 253, 0.12);
-      --violet: #7c3aed;
-      --fuchsia: #c026d3;
-      --lavender: #ddd6fe;
-      --muted: #9483b8;
-      --focus: #a78bfa;
+      --bg: #000000;
+      --panel: #07090e;
+      --line: rgba(253, 213, 126, 0.14);
+      --gold: #c8961a;
+      --gold-light: #fdd57e;
+      --navy: #28566e;
+      --navy-deep: #0b1a26;
+      --cream: #f6efdc;
+      --muted: #8c98a4;
+      --focus: #fdd57e;
     }
 
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
       background: var(--bg);
-      color: var(--lavender);
+      color: var(--cream);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -39,8 +42,8 @@
       inset: 0;
       z-index: 9999;
       background:
-        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.12), transparent 45%),
-        linear-gradient(135deg, var(--violet), var(--fuchsia));
+        radial-gradient(circle at 30% 20%, rgba(253,213,126,0.18), transparent 45%),
+        linear-gradient(135deg, var(--navy-deep), var(--navy));
       transform: translateX(0);
       transition: transform 0.55s cubic-bezier(.76,0,.24,1);
     }
@@ -55,7 +58,7 @@
       overflow: hidden;
       border: 1px solid var(--line);
       background: var(--panel);
-      box-shadow: 0 40px 80px -30px rgba(124, 58, 237, 0.35);
+      box-shadow: 0 40px 80px -30px rgba(200, 150, 26, 0.3);
     }
 
     /* ---------- Lado del formulario (izquierda) ---------- */
@@ -84,7 +87,7 @@
       display: block;
       font-size: 13px;
       font-weight: 500;
-      color: rgba(221, 214, 254, 0.85);
+      color: rgba(246, 239, 220, 0.85);
       margin-bottom: 7px;
     }
 
@@ -129,11 +132,21 @@
       transition: border-color 0.15s, background 0.15s;
     }
 
-    input.field-control::placeholder { color: #5f5478; }
+    input.field-control::placeholder { color: #566270; }
 
     input.field-control:focus {
       border-color: var(--focus);
-      background: rgba(167, 139, 250, 0.06);
+      background: rgba(253, 213, 126, 0.05);
+    }
+
+    /* Evita el fondo azul claro del autocompletado del navegador */
+    input.field-control:-webkit-autofill,
+    input.field-control:-webkit-autofill:hover,
+    input.field-control:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px #11151c inset;
+      -webkit-text-fill-color: #fff;
+      caret-color: #fff;
+      transition: background-color 9999s ease-in-out 0s;
     }
 
     .btn-primary {
@@ -142,15 +155,15 @@
       padding: 13px;
       border-radius: 10px;
       font-family: 'Inter', sans-serif;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 14.5px;
-      color: #fff;
-      background: linear-gradient(135deg, var(--violet), var(--fuchsia));
+      color: #1a1200;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
       cursor: pointer;
       margin-top: 6px;
       transition: filter 0.15s, transform 0.15s;
     }
-    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-primary:hover { filter: brightness(1.08); }
     .btn-primary:active { transform: scale(0.99); }
 
     .divider {
@@ -158,7 +171,7 @@
       align-items: center;
       gap: 14px;
       margin: 26px 0;
-      color: #5f5478;
+      color: #566270;
       font-size: 12.5px;
     }
     .divider::before, .divider::after {
@@ -176,7 +189,7 @@
       gap: 10px;
       background: transparent;
       border: 1px solid var(--line);
-      color: var(--lavender);
+      color: var(--cream);
       padding: 11px;
       border-radius: 10px;
       font-size: 14px;
@@ -203,24 +216,35 @@
       flex-direction: column;
       justify-content: space-between;
       background:
-        radial-gradient(circle at 20% 15%, rgba(255,255,255,0.18), transparent 45%),
-        radial-gradient(circle at 80% 85%, rgba(255,255,255,0.1), transparent 50%),
-        linear-gradient(160deg, var(--violet) 0%, var(--fuchsia) 100%);
+        radial-gradient(circle at 20% 15%, rgba(253,213,126,0.16), transparent 45%),
+        radial-gradient(circle at 80% 85%, rgba(255,255,255,0.07), transparent 50%),
+        linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 60%, #000 100%);
       overflow: hidden;
       color: #fff;
     }
 
-    .brand svg.mesh { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.4; }
+    .brand svg.mesh { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.45; }
 
-    .brand-mark { display: flex; align-items: center; gap: 10px; z-index: 1; }
-    .brand-mark .dot {
-      width: 34px; height: 34px; border-radius: 9px;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.4);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px;
+    .brand .moon-bg {
+      position: absolute;
+      right: -70px;
+      bottom: -70px;
+      width: 300px;
+      height: 300px;
+      opacity: 0.16;
+      pointer-events: none;
     }
-    .brand-mark span { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; }
+
+    .brand-mark { display: flex; align-items: center; gap: 14px; z-index: 2; }
+    .brand-mark img { width: 44px; height: 44px; border-radius: 50%; display: block; }
+    .brand-mark span {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 30px;
+      letter-spacing: 0.1em;
+      color: var(--gold-light);
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+    }
 
     .brand-copy { z-index: 1; margin: 40px 0; }
     .brand-copy h1 {
@@ -232,7 +256,7 @@
       letter-spacing: -0.02em;
     }
     .brand-copy p {
-      color: rgba(255,255,255,0.8);
+      color: rgba(255,255,255,0.78);
       font-size: 14.5px;
       line-height: 1.6;
       max-width: 32ch;
@@ -242,8 +266,8 @@
     .btn-outline {
       z-index: 1;
       background: transparent;
-      border: 1.5px solid rgba(255,255,255,0.6);
-      color: #fff;
+      border: 1.5px solid var(--gold-light);
+      color: var(--gold-light);
       padding: 11px 28px;
       border-radius: 10px;
       font-family: 'Inter', sans-serif;
@@ -253,7 +277,7 @@
       align-self: flex-start;
       transition: background 0.15s;
     }
-    .btn-outline:hover { background: rgba(255,255,255,0.12); }
+    .btn-outline:hover { background: rgba(253,213,126,0.12); }
 
     .brand-foot {
       z-index: 1;
@@ -294,7 +318,7 @@
         <div class="field">
           <div class="field-row">
             <label for="loginPassword">Contraseña</label>
-            <a href="#">¿Olvidaste tu contraseña?</a>
+            <a href="forget.html" onclick="event.preventDefault(); goTo('forget.html');">¿Olvidaste tu contraseña?</a>
           </div>
           <div class="input-wrap">
             <i class="fa-solid fa-lock icon"></i>
@@ -318,7 +342,7 @@
 
     <div class="brand">
       <svg class="mesh" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="rgba(255,255,255,0.4)" stroke-width="1">
+        <g stroke="rgba(253,213,126,0.45)" stroke-width="1">
           <line x1="30" y1="60" x2="140" y2="130"/>
           <line x1="140" y1="130" x2="260" y2="90"/>
           <line x1="140" y1="130" x2="110" y2="260"/>
@@ -329,20 +353,27 @@
           <line x1="110" y1="260" x2="40" y2="400"/>
         </g>
         <g fill="#ffffff">
-          <circle cx="30" cy="60" r="4"/>
-          <circle cx="140" cy="130" r="5"/>
-          <circle cx="260" cy="90" r="4"/>
-          <circle cx="370" cy="160" r="4"/>
-          <circle cx="110" cy="260" r="5"/>
-          <circle cx="230" cy="320" r="4"/>
-          <circle cx="180" cy="440" r="4"/>
-          <circle cx="40" cy="400" r="3"/>
+          <circle cx="30" cy="60" r="3"/>
+          <circle cx="140" cy="130" r="4"/>
+          <circle cx="260" cy="90" r="3"/>
+          <circle cx="370" cy="160" r="3"/>
+          <circle cx="110" cy="260" r="4"/>
+          <circle cx="230" cy="320" r="3"/>
+          <circle cx="180" cy="440" r="3"/>
+          <circle cx="40" cy="400" r="2.5"/>
+        </g>
+        <g fill="#fdd57e">
+          <path transform="translate(320 40)" d="M0,-12 L2.5,-2.5 L12,0 L2.5,2.5 L0,12 L-2.5,2.5 L-12,0 L-2.5,-2.5Z"/>
+          <path transform="translate(60 330)" d="M0,-9 L2,-2 L9,0 L2,2 L0,9 L-2,2 L-9,0 L-2,-2Z"/>
+          <path transform="translate(330 380)" d="M0,-7 L1.6,-1.6 L7,0 L1.6,1.6 L0,7 L-1.6,1.6 L-7,0 L-1.6,-1.6Z"/>
         </g>
       </svg>
 
+      <img class="moon-bg" src="../images/LunaLogo.png" alt="">
+
       <div class="brand-mark">
-        <div class="dot">X</div>
-        <span>X-App</span>
+        <img src="../images/LunaLogo.png" alt="Luna NIX">
+        <span>NIX</span>
       </div>
 
       <div class="brand-copy">

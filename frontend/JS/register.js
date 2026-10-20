@@ -8,8 +8,8 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
 
-  if (password.length !== 8) {
-    alert('La contraseña debe tener exactamente 8 caracteres.');
+  if (password.length < 8) {
+    alert('La contraseña debe tener al menos 8 caracteres.'); 
     return; 
   }
 

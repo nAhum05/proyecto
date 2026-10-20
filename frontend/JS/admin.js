@@ -44,6 +44,7 @@ async function cargarStats() {
         document.getElementById('statUsuarios').textContent    = data.usuarios.total;
         document.getElementById('statActivos').textContent     = data.usuarios.activos;
         document.getElementById('statSuspendidos').textContent = data.usuarios.suspendidos;
+        document.getElementById('statBaneados').textContent    = data.usuarios.baneados || 0;
         document.getElementById('statPosts').textContent       = data.publicaciones.total;
 
     } catch (error) {
@@ -75,8 +76,23 @@ async function cargarUsuarios() {
         users.forEach(u => {
             const row = document.createElement('tr');
 
-            const nuevoEstado = u.status === 'activo' ? 'suspendido' : 'activo';
-            const accionEstado = u.status === 'activo' ? 'Suspender' : 'Activar';
+            // Determinar las acciones según el estado actual
+            let nuevoEstado = 'activo';
+            let accionEstado = 'Activar';
+            let botonBanear = '';
+
+            if (u.status === 'activo') {
+                nuevoEstado = 'suspendido';
+                accionEstado = 'Suspender';
+                botonBanear = `<button class="btn btn-sm btn-danger ms-1" onclick="cambiarEstado('${u._id}', 'baneado')">Banear</button>`;
+            } else if (u.status === 'suspendido') {
+                nuevoEstado = 'activo';
+                accionEstado = 'Activar';
+                botonBanear = `<button class="btn btn-sm btn-danger ms-1" onclick="cambiarEstado('${u._id}', 'baneado')">Banear</button>`;
+            } else { // Si está baneado
+                nuevoEstado = 'activo';
+                accionEstado = 'Activar';
+            }
 
             // Opciones de rol
             const roles = ['usuario', 'moderador', 'administrador'];
@@ -84,7 +100,10 @@ async function cargarUsuarios() {
                 .map(r => `<option value="${r}" ${u.role === r ? 'selected' : ''}>${r}</option>`)
                 .join('');
 
-            row.innerHTML = `
+                const ultimoLogin = u.ultimoInicioSesion ? new Date(u.ultimoInicioSesion).toLocaleString() : 'Nunca';
+                const fechaBaneoFormato = u.fechaBaneo ? new Date(u.fechaBaneo).toLocaleString() : 'N/A';
+
+                row.innerHTML = `
                 <td>${u.firstName} ${u.lastName}</td>
                 <td>${u.email}</td>
                 <td>
@@ -94,12 +113,15 @@ async function cargarUsuarios() {
                     </select>
                 </td>
                 <td>${u.status}</td>
+                <td><small class="text-muted">${ultimoLogin}</small></td>
+                <td><small class="text-muted">${fechaBaneoFormato}</small></td>
                 <td>
                     <button
-                        class="btn btn-sm ${u.status === 'activo' ? 'btn-danger' : 'btn-success'}"
+                        class="btn btn-sm ${u.status === 'activo' ? 'btn-warning' : 'btn-success'}"
                         onclick="cambiarEstado('${u._id}', '${nuevoEstado}')">
                         ${accionEstado}
                     </button>
+                    ${botonBanear}
                     <button
                         class="btn btn-sm btn-outline-danger ms-1"
                         onclick="eliminarUsuario('${u._id}')">
@@ -147,11 +169,14 @@ async function cargarPosts() {
                 ? `${p.author.firstName} ${p.author.lastName || ''}`
                 : 'Usuario';
 
+            // Formatear el timestamp de creación del post con hora y fecha exacta
+            const fechaCreacion = p.createdAt ? new Date(p.createdAt).toLocaleString() : 'N/A';
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${autor}</td>
                 <td>${p.content.substring(0, 80)}${p.content.length > 80 ? '...' : ''}</td>
-                <td>${new Date(p.createdAt).toLocaleDateString()}</td>
+                <td><small class="text-muted">${fechaCreacion}</small></td>
                 <td>
                     <button
                         class="btn btn-sm btn-outline-danger"

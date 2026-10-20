@@ -4,11 +4,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
 
-  if (password.length !== 8) {
-    alert('La contraseña debe tener exactamente 8 caracteres.');
-    return; 
-  }
-
   try {
     const response = await fetch('http://localhost:5000/api/login', {
       method: 'POST',
@@ -29,11 +24,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
       if (data.user.role === 'administrador') {
         window.location.href = 'admin.html';
-    } else if (data.user.role === 'moderador') {
+      } else if (data.user.role === 'moderador') {
         window.location.href = 'moderador.html';
-    } else {
+      } else {
         window.location.href = 'feed.html';
-    }
+      }
 
     } else {
       alert(data.message || 'Error al iniciar sesión');

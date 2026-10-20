@@ -60,9 +60,17 @@ exports.banOrSuspendUser = async (req, res) => {
             });
         }
 
+        const updateData = { status };
+
+        if (status === 'baneado') {
+            updateData.fechaBaneo = new Date(); // Guarda la fecha y hora exacta del baneo
+        } else {
+            updateData.fechaBaneo = null; // Si se desbanea, limpiamos la fecha opcionalmente
+        }
+
         const user = await User.findByIdAndUpdate(
             req.params.id,
-            { status },
+            updateData,
             { returnDocument: 'after' }
         ).select('-password');
 
@@ -130,10 +138,11 @@ exports.deleteUser = async (req, res) => {
 
 exports.getStats = async (req, res) => {
     try {
-        const [totalUsers, activos, suspendidos, totalPosts] = await Promise.all([
+        const [totalUsers, activos, suspendidos, baneados, totalPosts] = await Promise.all([
             User.countDocuments(),
             User.countDocuments({ status: 'activo' }),
             User.countDocuments({ status: 'suspendido' }),
+            User.countDocuments({ status: 'baneado' }),
             Post.countDocuments()
         ]);
 
@@ -141,7 +150,8 @@ exports.getStats = async (req, res) => {
             usuarios: {
                 total: totalUsers,
                 activos,
-                suspendidos
+                suspendidos,
+                baneados
             },
             publicaciones: {
                 total: totalPosts

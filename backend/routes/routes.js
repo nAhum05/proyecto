@@ -1,4 +1,3 @@
-// routes.js — Rutas de la API
 const express = require('express');
 const router = express.Router();
 const verifyToken         = require('../middlewares/authMiddleware');
@@ -15,10 +14,7 @@ const {
     updateUserStatus
 } = require('../controllers/userControllers');
 
-const {
-    createPost,
-    getPosts
-} = require('../controllers/postControllers');
+const { createPost, getPosts } = require('../controllers/postControllers');
 
 const {
     updateUserRole,
@@ -28,72 +24,32 @@ const {
     getStats
 } = require('../controllers/adminControllers');
 
-
 router.post('/register', register);
 router.post('/login', login);
 
-
-
-// Perfil propio (específicas PRIMERO)
+// Perfil propio (específicas PRIMERO para evitar colisión con /:id)
 router.put('/user/profile', verifyToken, updateProfile);
 router.delete('/user/profile', verifyToken, deleteProfile);
-
-// Perfil por ID (parametrizada DESPUÉS)
 router.get('/user/:id', verifyToken, getProfile);
 
 // Publicaciones
 router.post('/posts', verifyToken, createPost);
 router.get('/posts', verifyToken, getPosts);
 
+// Moderador
+router.get('/moderator/users', verifyToken, moderatorMiddleware, getUsers);
+router.put('/moderator/users/:id/status', verifyToken, moderatorMiddleware, updateUserStatus);
 
-router.get(
-    '/moderator/users',
-    verifyToken,
-    moderatorMiddleware,
-    getUsers
-);
-
-router.put(
-    '/moderator/users/:id/status',
-    verifyToken,
-    moderatorMiddleware,
-    updateUserStatus   // solo activo/suspendido
-);
-
-
-// Dashboard
+// Admin — estadísticas
 router.get('/admin/stats', verifyToken, adminMiddleware, getStats);
 
-// Usuarios
+// Admin — usuarios
 router.get('/admin/users', verifyToken, adminMiddleware, getUsers);
+router.put('/admin/users/:id/role', verifyToken, adminMiddleware, updateUserRole);
+router.put('/admin/users/:id/status', verifyToken, adminMiddleware, banOrSuspendUser);
+router.delete('/admin/users/:id', verifyToken, adminMiddleware, deleteUser);
 
-router.put(
-    '/admin/users/:id/role',
-    verifyToken,
-    adminMiddleware,
-    updateUserRole
-);
-
-router.put(
-    '/admin/users/:id/status',
-    verifyToken,
-    adminMiddleware,
-    banOrSuspendUser   // activo/suspendido/baneado
-);
-
-router.delete(
-    '/admin/users/:id',
-    verifyToken,
-    adminMiddleware,
-    deleteUser
-);
-
-// Publicaciones
-router.delete(
-    '/admin/posts/:id',
-    verifyToken,
-    adminMiddleware,
-    deleteAnyPost
-);
+// Admin — publicaciones
+router.delete('/admin/posts/:id', verifyToken, adminMiddleware, deleteAnyPost);
 
 module.exports = router;
