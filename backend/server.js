@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/routes');
 const connectDB = require('./config/db');
+const morgan = require('morgan');
 
 const app = express();
 
@@ -13,6 +14,17 @@ connectDB(),
 // Middlewares
 app.use(cors());
 app.use(express.json()); // lee lo que envia el front
+
+morgan.token('client-ip', (req) => {
+  let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  if (ip === '::1') {
+      ip = '127.0.0.1';
+  }
+  return ip;
+});
+
+// Usamos el formato personalizado
+app.use(morgan(':client-ip - [:date[clf]] ":method :url" :status :response-time ms'));
 
 // Servir el frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
