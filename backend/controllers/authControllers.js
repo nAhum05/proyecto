@@ -63,6 +63,10 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'contrasena incorrecta' });
     }
 
+    // Registrar el evento de inicio de sesión en el historial
+    user.historialSesiones.push({ fecha: new Date() });
+    await user.save();
+
     //Registrar el timestamp del ultimo inicio de sesión
     user.ultimoInicioSesion = new Date();
     await user.save();
