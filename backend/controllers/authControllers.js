@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
     
     //Agregue esta parte genera un Toke JWT con la iformación clave (ID y Rol)
     const token = jwt.sign(
-      {id: user._id, role: user.role},
+      {id: user._id, role: user.role, firstName: user.firstName},
       process.env.JWT_SECRET || 'secreto',
       {expiresIn: '24h'}
     )

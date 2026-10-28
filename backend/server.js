@@ -16,16 +16,30 @@ app.use(cors());
 app.use(express.json()); // lee lo que envia el front
 
 morgan.token('client-ip', (req) => {
-  let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  if (ip === '::1') {
-      ip = '127.0.0.1';
-  }
-  return ip;
+    let ip = req.headers['x-forwarded-for']?.split(',')[0].trim()
+        || req.socket.remoteAddress;
+
+    if (ip === '::1') {
+        ip = '127.0.0.1';
+    }
+
+    return ip;
 });
 
-// Usamos el formato personalizado
-app.use(morgan(':client-ip - [:date[clf]] ":method :url" :status :response-time ms'));
+// Obtener el ID del usuario desde el JWT verificado
+morgan.token('user-id', (req) => {
+    return req.user?.id || req.user?._id || 'no-autenticado';
+});
 
+// Obtener el nombre desde el JWT verificado
+morgan.token('user-name', (req) => {
+    return req.user?.firstName || 'no-autenticado';
+});
+
+// Formato personalizado de los registros
+app.use(
+    morgan(':client-ip - [:date[clf]] ":method :url" :status :response-time ms | Usuario: :user-name | ID: :user-id')
+);
 // Servir el frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
 
