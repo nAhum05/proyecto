@@ -18,11 +18,14 @@ app.use(express.json()); // lee lo que envia el front
 
 // Tokens personalizados de Morgan
 morgan.token('client-ip', (req) => {
-  let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  if (ip === '::1') {
-      ip = '127.0.0.1';
-  }
-  return ip;
+    let ip = req.headers['x-forwarded-for']?.split(',')[0].trim()
+        || req.socket.remoteAddress;
+
+    if (ip === '::1') {
+        ip = '127.0.0.1';
+    }
+
+    return ip;
 });
 
 morgan.token('user-id', (req) => {
