@@ -67,8 +67,13 @@ exports.login = async (req, res) => {
     user.historialSesiones.push({ fecha: new Date() });
     await user.save();
 
+    //Registrar el timestamp del ultimo inicio de sesión
+    user.ultimoInicioSesion = new Date();
+    await user.save();
+    
+    //Agregue esta parte genera un Toke JWT con la iformación clave (ID y Rol)
     const token = jwt.sign(
-      {id: user._id, role: user.role},
+      {id: user._id, role: user.role, firstName: user.firstName},
       process.env.JWT_SECRET || 'secreto',
       {expiresIn: '24h'}
     )
@@ -81,7 +86,8 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         email: user.email,
         role: user.role,
-        status: user.status
+        status: user.status,
+        ultimoInicioSesion: user.ultimoInicioSesion
       }
     });
 

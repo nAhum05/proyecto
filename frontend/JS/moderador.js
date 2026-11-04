@@ -4,7 +4,6 @@ const user = JSON.parse(localStorage.getItem('user'));
 
 // ---------- Notificaciones (SweetAlert2 con la paleta NIX) ----------
 
-// Aviso pequeño que aparece arriba a la derecha y se va solo
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -18,7 +17,6 @@ const Toast = Swal.mixin({
     }
 });
 
-// Ventana central para errores y confirmaciones
 const Modal = Swal.mixin({
     buttonsStyling: false,
     customClass: {
@@ -37,7 +35,6 @@ function errorServidor() {
     });
 }
 
-// Evita que un nombre con código HTML se ejecute dentro de la tabla
 function escapeHtml(value) {
     return String(value ?? '')
         .replace(/&/g, '&amp;')
@@ -65,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cargarUsuarios();
 
-    // Cerrar sesión (con confirmación)
     document.getElementById('logoutBtn').addEventListener('click', async () => {
 
         const confirmacion = await Modal.fire({
@@ -116,31 +112,42 @@ async function cargarUsuarios() {
         }
 
         const table = document.getElementById('usersTable');
-
         table.innerHTML = '';
 
         users.forEach(u => {
 
             const row = document.createElement('tr');
 
-            const accion = u.status === 'activo'
-                ? 'Suspender'
-                : 'Activar';
+            // Definir la acción exclusiva para el moderador (Activar o Banear)
+            let nuevoEstado = 'activo';
+            let accionEstado = 'Activar';
+            let claseBtn = 'btn-success';
 
-            const nuevoEstado = u.status === 'activo'
-                ? 'suspendido'
-                : 'activo';
+            if (u.status === 'activo') {
+                nuevoEstado = 'baneado';
+                accionEstado = 'Banear';
+                claseBtn = 'btn-danger';
+            } else { // Si está baneado
+                nuevoEstado = 'activo';
+                accionEstado = 'Activar';
+                claseBtn = 'btn-success';
+            }
+
+            const ultimoLogin = u.ultimoInicioSesion ? new Date(u.ultimoInicioSesion).toLocaleString() : 'Nunca';
+            const fechaBaneoFormato = u.fechaBaneo ? new Date(u.fechaBaneo).toLocaleString() : 'N/A';
 
             row.innerHTML = `
                 <td>${escapeHtml(u.firstName)} ${escapeHtml(u.lastName)}</td>
                 <td>${escapeHtml(u.email)}</td>
                 <td>${escapeHtml(u.role)}</td>
                 <td>${escapeHtml(u.status)}</td>
+                <td><small class="text-muted">${ultimoLogin}</small></td>
+                <td><small class="text-muted">${fechaBaneoFormato}</small></td>
                 <td>
                     <button
-                        class="btn btn-sm ${u.status === 'activo' ? 'btn-danger' : 'btn-success'}"
+                        class="btn btn-sm ${claseBtn}"
                         onclick="cambiarEstado('${escapeHtml(u._id)}', '${nuevoEstado}')">
-                        ${accion}
+                        ${accionEstado}
                     </button>
                 </td>
             `;
@@ -150,11 +157,8 @@ async function cargarUsuarios() {
         });
 
     } catch (error) {
-
         console.error('Error:', error);
-
         errorServidor();
-
     }
 }
 
@@ -162,17 +166,16 @@ async function cargarUsuarios() {
 // Cambiar estado del usuario
 async function cambiarEstado(userId, status) {
 
-    const suspender = status === 'suspendido';
+    const banear = status === 'baneado';
 
-    // Confirmación antes de cambiar el estado
     const confirmacion = await Modal.fire({
         icon: 'warning',
-        title: suspender ? '¿Suspender usuario?' : '¿Activar usuario?',
-        text: suspender
-            ? 'Vas a suspender a este usuario.'
+        title: banear ? '¿Banear usuario?' : '¿Activar usuario?',
+        text: banear
+            ? 'El usuario no podrá realizar publicaciones.'
             : 'Vas a reactivar a este usuario.',
         showCancelButton: true,
-        confirmButtonText: suspender ? 'Sí, suspender' : 'Sí, activar',
+        confirmButtonText: banear ? 'Sí, banear' : 'Sí, activar',
         cancelButtonText: 'Cancelar',
         reverseButtons: true
     });
@@ -185,12 +188,10 @@ async function cambiarEstado(userId, status) {
             `http://localhost:5000/api/moderator/users/${userId}/status`,
             {
                 method: 'PUT',
-
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-
                 body: JSON.stringify({
                     status: status
                 })
@@ -214,14 +215,10 @@ async function cambiarEstado(userId, status) {
             title: data.message || 'Estado actualizado correctamente'
         });
 
-        // Volver a cargar la tabla
         cargarUsuarios();
 
     } catch (error) {
-
         console.error('Error:', error);
-
         errorServidor();
-
     }
 }

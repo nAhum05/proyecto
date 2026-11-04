@@ -22,14 +22,29 @@ const Toast = Swal.mixin({
   }
 });
 
-// 1. Validar sesión
+// 1. Validar sesión y obtener datos del usuario
 const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user')); // <--- Leemos el usuario guardado
+
 if (!token) {
   window.location.href = 'login.html';
 }
 
 // 2. Cargar publicaciones al entrar
 window.addEventListener('DOMContentLoaded', async () => {
+
+  // Si el usuario está baneado, restringir visualmente la sección de escritura
+  if (user && user.status === 'baneado') {
+    const postContent = document.getElementById('postContent');
+    const btnPublish = document.getElementById('btnPublish');
+    
+    if (postContent && btnPublish) {
+      postContent.placeholder = 'Tu cuenta está baneada. Puedes ver el contenido, pero tienes prohibido publicar.';
+      postContent.disabled = true;
+      btnPublish.disabled = true;
+      btnPublish.classList.add('disabled');
+    }
+  }
 
   // Si venimos de publicar, mostrar el aviso
   if (sessionStorage.getItem('postPublished')) {
@@ -59,11 +74,18 @@ window.addEventListener('DOMContentLoaded', async () => {
         const autor = post.author ? `${post.author.firstName} ${post.author.lastName || ''}` : 'Usuario';
         const rol = post.author ? post.author.role : 'usuario';
 
+        const fechaCreacion = post.createdAt ? new Date(post.createdAt).toLocaleString() : 'Hace un momento';
+
         container.innerHTML += `
           <div class="post-card mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
               <span class="fw-bold text-white">${autor}</span>
               <span class="role-badge">${rol}</span>
+            </div>
+            <div class="mb-2">
+              <span style="font-size: 0.75rem; color: var(--gold-light); opacity: 0.85;">
+                <i class="fa-regular fa-clock me-1"></i>${fechaCreacion}
+              </span>
             </div>
             <p class="post-content mb-0">${post.content}</p>
           </div>
