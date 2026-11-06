@@ -7,7 +7,7 @@ const authRoutes = require('./routes/routes');
 const connectDB = require('./config/db');
 const morgan = require('morgan');
 const logger = require('./logger');
-const AuditLog = require('./models/AuditLog'); // <--- Importamos nuestro modelo
+const AuditLog = require('./models/AuditLog'); 
 
 const app = express();
 
@@ -26,6 +26,9 @@ morgan.token('user-id', (req) => {
   return req.user ? (req.user.id || req.user._id || req.user.userId) : 'Anónimo';
 });
 
+morgan.token('device-uuid', (req) => {
+  return req.headers['x-device-id'] || 'sin-device-uuid';
+});
 
 const morganStream = {
   write: async (message) => {
@@ -54,7 +57,7 @@ const morganStream = {
 };
 
 app.use(
-  morgan(':client-ip [User: :user-id] ":method :url" :status :response-time ms', { 
+  morgan(':client-ip [User: :user-id] [Device: :device-uuid] ":method :url" :status :response-time ms', { 
     stream: morganStream 
   })
 );
