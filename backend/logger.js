@@ -1,9 +1,30 @@
 const winston = require('winston');
-require('winston-mongodb');
-require('dotenv').config();
 
-const RETENTION_DAYS = 7;
-const SECONDS_PER_DAY = 24 * 60 * 60;
+const transports = [
+  new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple()
+    )
+  })
+];
+
+// Si LOKI_HOST está configurado (por ejemplo en local con docker-compose: http://localhost:3100)
+if (process.env.LOKI_HOST) {
+  try {
+    const LokiTransport = require('winston-loki');
+    transports.push(
+      new LokiTransport({
+        host: process.env.LOKI_HOST,
+        labels: { app: 'mi-proyecto-backend' },
+        json: true,
+        replaceTimestamp: true,
+      })
+    );
+  } catch (err) {
+    console.warn('Loki transport no disponible:', err.message);
+  }
+}
 
 const logger = winston.createLogger({
   level: 'info',
@@ -12,24 +33,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  transports: [
-    new winston.transports.MongoDB({
-      db: process.env.MONGO_URI_LOGS,
-      collection: 'security_logs',
-      level: 'info', 
-      expireAfterSeconds: RETENTION_DAYS * SECONDS_PER_DAY, // 7 días exactos
-      storeHost: false,
-      metaKey: 'meta'
-    }),
-    
-    // Consola local para desarrollo
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    })
-  ]
+  transports
 });
 
 module.exports = logger;

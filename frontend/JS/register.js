@@ -14,8 +14,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   }
 
   try {
-    const response = await fetch('http://localhost:5000/api/register', { //temporal por que esta
-        //en local
+    const response = await fetch('/api/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

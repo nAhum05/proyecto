@@ -149,7 +149,7 @@ async function cargarStats() {
     try {
 
         const response = await fetch(
-            'http://localhost:5000/api/admin/stats',
+            '/api/admin/stats',
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -203,7 +203,7 @@ async function cargarUsuarios() {
     try {
 
         const response = await fetch(
-            'http://localhost:5000/api/admin/users',
+            '/api/admin/users',
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -348,7 +348,7 @@ async function cargarPosts() {
     try {
 
         const response = await fetch(
-            'http://localhost:5000/api/posts',
+            '/api/posts',
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -484,7 +484,7 @@ async function cambiarRol(userId, role, previousRole) {
     try {
 
         const response = await fetch(
-            `http://localhost:5000/api/admin/users/${encodeURIComponent(userId)}/role`,
+            `/api/admin/users/${encodeURIComponent(userId)}/role`,
             {
                 method: 'PUT',
 
@@ -572,7 +572,7 @@ async function cambiarEstado(userId, status) {
     try {
 
         const response = await fetch(
-            `http://localhost:5000/api/admin/users/${encodeURIComponent(userId)}/status`,
+            `/api/admin/users/${encodeURIComponent(userId)}/status`,
             {
                 method: 'PUT',
 
@@ -649,7 +649,7 @@ async function eliminarUsuario(userId) {
     try {
 
         const response = await fetch(
-            `http://localhost:5000/api/admin/users/${encodeURIComponent(userId)}`,
+            `/api/admin/users/${encodeURIComponent(userId)}`,
             {
                 method: 'DELETE',
 
@@ -721,7 +721,7 @@ async function eliminarPost(postId) {
     try {
 
         const response = await fetch(
-            `http://localhost:5000/api/admin/posts/${encodeURIComponent(postId)}`,
+            `/api/admin/posts/${encodeURIComponent(postId)}`,
             {
                 method: 'DELETE',
 

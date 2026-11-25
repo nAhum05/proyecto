@@ -46,7 +46,7 @@ if (!token || !userStored) {
 // 2. Cargar datos del perfil al entrar
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await fetch(`http://localhost:5000/api/user/${userStored.id}`, {
+        const response = await fetch(`/api/user/${userStored.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -88,7 +88,7 @@ document.getElementById('formUpdateProfile').addEventListener('submit', async (e
     const lastName = document.getElementById('editLastName').value;
 
     try {
-        const response = await fetch('http://localhost:5000/api/user/profile', {
+        const response = await fetch('/api/user/profile', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ document.getElementById('btnDeleteAccount').addEventListener('click', async () =
     if (!confirmacion.isConfirmed) return;
 
     try {
-        const response = await fetch('http://localhost:5000/api/user/profile', {
+        const response = await fetch('/api/user/profile', {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });

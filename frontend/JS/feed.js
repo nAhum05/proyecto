@@ -53,7 +53,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:5000/api/posts', {
+    const response = await fetch('/api/posts', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -112,7 +112,7 @@ document.getElementById('btnPublish').addEventListener('click', async (e) => {
   }
 
   try {
-    const response = await fetch('http://localhost:5000/api/posts', {
+    const response = await fetch('/api/posts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

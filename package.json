@@ -1,0 +1,10 @@
+{
+  "name": "seguridad-informatica",
+  "version": "1.0.0",
+  "description": "Proyecto Red Social de Seguridad Informática NIX",
+  "scripts": {
+    "start": "node backend/server.js",
+    "install:backend": "cd backend && npm install",
+    "build": "cd backend && npm install"
+  }
+}

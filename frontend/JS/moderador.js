@@ -91,7 +91,7 @@ async function cargarUsuarios() {
     try {
 
         const response = await fetch(
-            'http://localhost:5000/api/moderator/users',
+            '/api/moderator/users',
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -185,7 +185,7 @@ async function cambiarEstado(userId, status) {
     try {
 
         const response = await fetch(
-            `http://localhost:5000/api/moderator/users/${userId}/status`,
+            `/api/moderator/users/${userId}/status`,
             {
                 method: 'PUT',
                 headers: {
