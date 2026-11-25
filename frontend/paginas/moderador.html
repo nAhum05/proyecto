@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    /* La página en sí no tiene animaciones; solo las notificaciones de SweetAlert */
     .btn, .table-card * { transition: none !important; }
 
     /* ---------- SweetAlert2 con la paleta NIX ---------- */
@@ -53,7 +52,6 @@
     }
     .swal-nix-cancel:hover { background: rgba(255, 255, 255, 0.05); }
 
-    /* Icono de éxito en dorado */
     .swal-nix .swal2-icon.swal2-success { border-color: var(--gold-light); color: var(--gold-light); }
     .swal-nix .swal2-icon.swal2-success [class^='swal2-success-line'] { background-color: var(--gold-light); }
     .swal-nix .swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(253, 213, 126, 0.3); }
@@ -202,17 +200,21 @@
       font-size: 0.93rem;
       border-bottom: 1px solid var(--line-soft);
       background: transparent;
-      color: var(--cream);
+      color: var(--cream) !important;
+    }
+
+    /* Corrección para que las fechas y textos secundarios sean visibles */
+    .table-card tbody td small {
+      color: var(--muted) !important;
     }
 
     .table-card tbody tr:last-child td { border-bottom: none; }
-
     .table-card tbody tr:hover td { background: rgba(253, 213, 126, 0.05); }
 
     .table-card tbody td:nth-child(1) { color: #fff; font-weight: 500; }
     .table-card tbody td:nth-child(2) { color: var(--muted); }
 
-    /* ---------- Botones de acción (los genera moderador.js) ---------- */
+    /* ---------- Botones de acción ---------- */
     .table-card .btn {
       border-radius: 8px;
       font-size: 0.8rem;
@@ -220,7 +222,6 @@
       padding: 0.35rem 0.85rem;
     }
 
-    /* Suspender */
     .table-card .btn-danger {
       background: rgba(239, 68, 68, 0.08);
       border: 1px solid rgba(239, 68, 68, 0.4);
@@ -232,7 +233,6 @@
       color: #fff;
     }
 
-    /* Reactivar */
     .table-card .btn-success {
       background: rgba(253, 213, 126, 0.08);
       border: 1px solid rgba(253, 213, 126, 0.4);
@@ -244,12 +244,15 @@
       color: #fff;
     }
 
-    .table-card .btn-warning,
-    .table-card .btn-secondary,
-    .table-card .btn-primary {
-      background: rgba(40, 86, 110, 0.35);
-      border: 1px solid rgba(40, 86, 110, 0.9);
-      color: var(--cream);
+    .table-card .btn-warning {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fcd34d;
+    }
+    .table-card .btn-warning:hover {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: #f59e0b;
+      color: #fff;
     }
 
     @media (max-width: 768px) {
@@ -292,7 +295,9 @@
               <th>Correo</th>
               <th>Rol</th>
               <th>Estado</th>
-              <th>Acción</th>
+              <th>Último Acceso</th>
+              <th>Fecha Baneo</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody id="usersTable"></tbody>

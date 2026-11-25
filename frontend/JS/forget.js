@@ -1,7 +1,7 @@
 // JS/forget.js
 // Misma base que tu login (http://localhost:5000/api/login).
 // Cambia el final de la ruta cuando crees el endpoint en el backend.
-const API_FORGOT_URL = 'http://localhost:5000/api/forgot-password';
+const API_FORGOT_URL = '/api/forgot-password';
 
 const form = document.getElementById('forgotForm');
 const emailInput = document.getElementById('forgotEmail');

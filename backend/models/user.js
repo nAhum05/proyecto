@@ -48,6 +48,16 @@ const userSchema = new mongoose.Schema({
     default: 'activo'
   },
 
+  ultimoInicioSesion: {
+    type: Date,
+    default: null
+  },
+
+  fechaBaneo: {
+    type: Date,
+    default: null
+  },
+
   historialSesiones: [
     {
       fecha: { type: Date, required: true }
